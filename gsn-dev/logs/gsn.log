@@ -1,0 +1,5 @@
+ERROR [2013-05-18 00:11:36,675] [main] (    Main.java:212)     - 
+java.lang.NullPointerException
+	at gsn.Main.<init>(Main.java:98)
+	at gsn.Main.getInstance(Main.java:210)
+	at gsn.Main.main(Main.java:244)
