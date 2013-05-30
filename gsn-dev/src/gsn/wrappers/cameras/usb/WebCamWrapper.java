@@ -13,10 +13,8 @@ package gsn.wrappers.cameras.usb;
 
 import gsn.beans.AddressBean;
 import gsn.beans.DataField;
-import gsn.beans.DataTypes;
 import gsn.beans.StreamElement;
 import gsn.wrappers.AbstractWrapper;
-
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.ByteArrayOutputStream;
@@ -24,7 +22,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import javax.media.Buffer;
 import javax.media.CaptureDeviceInfo;
 import javax.media.CaptureDeviceManager;
@@ -49,16 +46,34 @@ import javax.media.protocol.PushBufferStream;
 import javax.media.util.BufferToImage;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+
 
 import javax.imageio.ImageIO;
 
 public class WebCamWrapper extends AbstractWrapper implements ControllerListener {
+
+	private static final transient Logger logger                       = Logger.getLogger( WebCamWrapper.class );
+	private static int                    threadCounter                = 0;
+	
+	
+   private static final String PARAM_WCNAME = "webcam-name";
+   private static final String PARAM_CAPTURERATE = "capture-rate";
+   private static final String PARAM_LIVEVIEW = "live-view";
+   private static final String PARAM_MAXPOST = "max-posts";
    
-   public static final String            PICTURE_KEY                  = "PICTURE";
+   private static final String DEFAULT_WCNAME = "vfw:Microsoft WDM Image Capture (Win32):0";
+   private static final int DEFAULT_CAPTURERATE = 1000;
+   private static final boolean DEFAULT_LIVEVIEW = false;
+   private static final long DEFAULT_MAXPOSTS = Long.MAX_VALUE;
+   
+   private  String webcamName = DEFAULT_WCNAME ;
+   private  int capture_rate = DEFAULT_CAPTURERATE;
+   private  boolean liveview = DEFAULT_LIVEVIEW;
+   private  long max_posts = DEFAULT_MAXPOSTS;
+   
+   public int n_post;
    
    private final ByteArrayOutputStream   baos                         = new ByteArrayOutputStream( 16 * 1024 );
    
@@ -68,10 +83,9 @@ public class WebCamWrapper extends AbstractWrapper implements ControllerListener
    
    private BufferToImage                 converter;                                                             // Global
                                                                                                                  
-   private JPanel                        lable                        = new JPanel( );
-   
-   private ImageWrapper                  reading;                                                               // Contains
-                                                                                                                 
+   private JPanel                        panel                        = null;
+ 
+   private ImageWrapper             reading;                                                                                             
    private Object                        stateLock                    = new Object( );
    
    private int                           height;
@@ -86,75 +100,153 @@ public class WebCamWrapper extends AbstractWrapper implements ControllerListener
    
    private PushBufferDataSource          source                       = null;
    
-   private static final transient Logger logger                       = Logger.getLogger( WebCamWrapper.class );
    
-   /**
-    * for debugging purposes.
-    */
-   private static int                    threadCounter                = 0;
    
-   public static final String            DEFAULT_GSN_LOG4J_PROPERTIES = "conf/log4j.properties";
+
    
-   private transient final static  DataField [] dataField = new DataField[] {new DataField( PICTURE_KEY , "binary:image/jpeg" , "The pictures observerd from the webcam." )};
+   private DataField[] collection = new DataField[] { new DataField ("image", "binary:image/jpeg")};
    // -----------------------------------START----------------------------------------
    // DEVICE NAME FOR LINUX CAM: "v4l:OV518 USB Camera:0"
-   private boolean isLiveViewEnabled = false;
+   
+   
+   public DataField[] getOutputFormat() {
+	   return collection;
+   }
+   
    
    public boolean initialize ( ) {
       setName( "WebCamWrapper-Thread:" + ( ++threadCounter ) );
+      
       AddressBean addressBean = getActiveAddressBean( );
-      String liveView = addressBean.getPredicateValue( "live-view" );
-      String deviceName=addressBean.getPredicateValue("device");
-      if ( liveView == null ) {
-         logger.warn( "The >liveView< parameter is missing for the WebCamWrappe,  initialization failed." );
-         return false;
-      } else {
-         try {
-            isLiveViewEnabled = Boolean.parseBoolean( liveView );
-         } catch ( Exception e ) {
-            logger.warn( "The >liveView< parameter is not a valid boolean (WebCamWrapper)" , e );
-            return false;
-         }
+      
+      String readString;
+      
+      readString  = addressBean.getPredicateValue(PARAM_WCNAME);
+      if (readString != null) {
+    	  webcamName = readString;
       }
-      return webcamInitialization( isLiveViewEnabled ,deviceName);
+
+      //capture_rate
+      readString= addressBean.getPredicateValue(PARAM_CAPTURERATE);
+      if (readString != null) {
+          try {
+          	capture_rate = Integer.parseInt(readString);
+          } catch (NumberFormatException e) {}
+      }
+      
+
+      //liveview
+      readString= addressBean.getPredicateValue(PARAM_LIVEVIEW);
+      if (readString != null) {
+          try {
+          	liveview = Boolean.parseBoolean(readString);
+          } catch (NumberFormatException e) {}
+      }
+      
+      /*
+      //force false to live-view!!!!
+      if (liveview){
+      	logger.info("Live view mode is not implemented yet...setting live-view to FALSE!");
+      	liveview=false;
+      }
+      */
+      
+      //max_posts
+      readString= addressBean.getPredicateValue(PARAM_MAXPOST);
+      if (readString != null) {
+          try {
+          	max_posts = Long.parseLong(readString);
+          	
+          	if (max_posts<=0){
+          		max_posts=Long.MAX_VALUE;
+          	}
+          } catch (NumberFormatException e) {}
+      }
+      
+      n_post=0;
+      
+      return webcamInitialization();
    }
    
-   private boolean webcamInitialization ( boolean liveView,String deviceName ) {
-	  CaptureDeviceInfo device = CaptureDeviceManager.getDevice( deviceName );
-      if (device==null) {
-    	  logger.error("Device doesn't exist: "+deviceName);
-    	  return false;
-      }
-      MediaLocator loc = device.getLocator( );
-      try {
-         ds = Manager.createDataSource( loc );
+   private boolean webcamInitialization (  ) {
+	  
+	  //printDeviceList();
+	  
+	  
+	  CaptureDeviceInfo device = null;
+	  
+	  Vector<CaptureDeviceInfo> list = CaptureDeviceManager.getDeviceList ( null );
+	  if (!list.isEmpty()){
+		  for (int i=0;i<list.size();i++){
+			  if (list.get(i).getName().equalsIgnoreCase(webcamName)){
+				  device=list.get(i);
+				  break; //FOUND!!!
+			  }
+		  }
+	  }
+	  else{
+		  logger.error("WebCamWrapper: Something wrong in listing media devices!");
+		  return false;
+	  }
+	  if (device==null){
+		  logger.error("WebCamWrapper: Cannot find " + webcamName +" media device!");
+		  return false;
+	 }
+	 
+	  int max_rety=10;
+	  int retry=0;
+	  
+	  MediaLocator ml = null;
+	  while(ml==null){
+	  	ml=device.getLocator();
+	  	
+	  	retry++;
+	  	if (ml==null){
+			  logger.debug("WebCamWrapper: [getLocator] RETRY "+String.valueOf(retry)+"/"+String.valueOf(max_rety)+" FAILED");
+			  if (retry==max_rety){
+			  		logger.error("WebCamWrapper: Cannot locate media device!");
+					return false;
+			  }
+		}
+	  }
+	  
+	  logger.debug("WebCamWrapper: [getLocator] OK!");
+	  
+	  try {
+         ds = Manager.createDataSource( ml );
       } catch ( NoDataSourceException e ) {
-         // Did you load the module ?
-         // Did you set the Env ?
-         logger.error( "Unable to create dataSource[Did you set the environment + load the module]" );
+    	  //busy resource!!
+         logger.error( "WebCamWrapper: Cannot create dataSource!" );
          logger.error( e.getMessage( ) , e );
          return false;
       } catch ( IOException e ) {
-         logger.error( "IO Error creating dataSource" );
+         logger.error( "WebCamWrapper: I/O error creating dataSource" );
          logger.error( e.getMessage( ) , e );
          return false;
       }
+      
       if ( !( ds instanceof CaptureDevice ) ) {
-         logger.error( "DataSource not a CaptureDevice" );
+         logger.error( "WebCamWrapper: DataSource not a CaptureDevice" );
          return false;
       }
-      
+	 
+	 
       FormatControl [ ] fmtControls = ( ( CaptureDevice ) ds ).getFormatControls( );
       
+
       if ( fmtControls == null || fmtControls.length == 0 ) {
-         logger.error( "No FormatControl available" );
+         logger.error( "WebCamWrapper: No FormatControl available" );
          return false;
       }
       
       Format setFormat = null;
       YUVFormat userFormat = null;
-      for ( Format format : device.getFormats( ) )
-         if ( format instanceof YUVFormat ) userFormat = ( YUVFormat ) format;
+      
+      for ( Format format : device.getFormats( ) ){
+         if ( format instanceof YUVFormat ){
+        	 userFormat = ( YUVFormat ) format;
+         }
+      }
       
       this.width = userFormat.getSize( ).width;
       this.height = userFormat.getSize( ).height;
@@ -165,27 +257,31 @@ public class WebCamWrapper extends AbstractWrapper implements ControllerListener
             break;
          }
       }
+      
       if ( setFormat == null ) {
-         logger.error( "Failed to set device to specified mode" );
+         logger.error( "WebCamWrapper: Failed to set device to specified mode" );
          return false;
       }
       
       try {
          ds.connect( );
       } catch ( IOException ioe ) {
-         logger.error( "Unable to connect to DataSource" );
+         logger.error( "WebCamWrapper: Unable to connect to DataSource" );
+         logger.error( ioe.getMessage( ) , ioe );
          return false;
       }
-      logger.debug( "Data source created and format set" );
+      logger.debug( "WebCamWrapper: SUCCESS!!!!Data source created and format set" );
+      
       try {
          deviceProc = Manager.createProcessor( ds );
       } catch ( IOException ioe ) {
-         logger.error( "Unable to get Processor for device: " + ioe.getMessage( ) );
+         logger.error( "WebCamWrapper: Unable to get Processor for device: " + ioe.getMessage( ) );
          return false;
       } catch ( NoProcessorException npe ) {
-         logger.error( "Unable to get Processor for device: " + npe.getMessage( ) );
+         logger.error( "WebCamWrapper: Unable to get Processor for device: " + npe.getMessage( ) );
          return false;
       }
+      
       /*
        * In order to use the controller we have to put it in the realized state.
        * We do this by calling the realize method, but this will return
@@ -209,7 +305,6 @@ public class WebCamWrapper extends AbstractWrapper implements ControllerListener
       }
       
       deviceProc.start( );
-      System.out.println( "Just before streaming." );
       logger.info( "Before Streaming" );
       try {
          source = ( PushBufferDataSource ) deviceProc.getDataOutput( );
@@ -231,16 +326,51 @@ public class WebCamWrapper extends AbstractWrapper implements ControllerListener
             YUVFormat yuvf = ( YUVFormat ) streams[ i ].getFormat( );
             converter = new BufferToImage( yuvf );
          }
-      if ( liveView ) {
-         mainFrame = new JFrame( "Webcam's current observations [GSN Project]." );
-         mainFrame.getContentPane( ).add( lable );
-         mainFrame.setSize( getWidth( ) + 10 , getHeight( ) + 10 );
-         mainFrame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
+      if (this.liveview ) {
+         mainFrame = new JFrame( "Live-view from USB" );
+         panel = new JPanel( );
+         
+ 		 mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         mainFrame.getContentPane( ).add( panel );
+         mainFrame.setSize( getWidth( ), getHeight( ));
          mainFrame.setResizable( false );
          mainFrame.setVisible( true );
       }
       return true;
    }
+   
+   
+   
+   private boolean PostData(ImageWrapper reading) {
+       boolean success = true;
+       Serializable[] output = new Serializable[this.getOutputFormat().length];
+		
+       
+       try {
+	         baos.reset( );
+	         if ( reading != null ) {
+	        	 ImageIO.write(reading.getIm(), "png", baos);
+	        	 
+	        	 output[0]= baos.toByteArray( ) ;
+	        	 baos.close();
+	        }
+	    } catch ( Exception e ) {
+	         logger.error( e.getMessage( ) , e );
+	    }
+		
+
+		//build StreamElement
+		StreamElement se = new StreamElement(getOutputFormat(), output);
+		
+       if (success) {
+           success = postStreamElement(se);
+       }
+
+       return success;		
+   }
+   
+   
+   
    
    public void controllerUpdate ( ControllerEvent ce ) {
       if ( ce instanceof RealizeCompleteEvent ) {
@@ -250,6 +380,7 @@ public class WebCamWrapper extends AbstractWrapper implements ControllerListener
          }
       }
    }
+   
    
    private int getHeight ( ) {
       return height;
@@ -270,40 +401,40 @@ public class WebCamWrapper extends AbstractWrapper implements ControllerListener
       return converter.createImage( buff );
    }
    
-   public  DataField[] getOutputFormat ( ) {
-      return dataField;
+
+
+   public void run() {
+   	//boolean postDataOk;
+	   
+   	while(n_post<max_posts){
+			try {
+				Thread.sleep(capture_rate);
+			} catch (InterruptedException e) {
+				logger.error(e.getMessage(), e);
+			}
+			reading = new ImageWrapper(getImage());
+			
+			
+			if (this.liveview) {
+	        	  Graphics2D graphics2D = ( Graphics2D ) panel.getGraphics( );
+	        	  graphics2D.drawImage( reading.getIm( ) , 0  , 0 , null );
+	        }
+			PostData(reading);
+			n_post++;
+				
+				
+   	}
+   	logger.info("posted " + String.valueOf(n_post)+ " images: now stopping!");
+   	this.dispose();
+   	/*for debug close everything!
+		if (postDataOk==false){//if not necessary, indeed
+			this.dispose();
+			//logger.error("Post data Failed!!!!");
+		}
+		*/
    }
    
-   private StreamElement getStreamElement ( ) {
-      StreamElement streamElement = null;
-      try {
-         baos.reset( );
-         if ( reading != null ) {
-        	 ImageIO.write(reading.getBufferedImage( ), "jpeg", baos);
-        	 baos.close();
-             streamElement = new StreamElement( new String [ ] { PICTURE_KEY } , new Byte [ ] { DataTypes.BINARY } , new Serializable [ ] { baos.toByteArray( ) } , System.currentTimeMillis( ) );
-         }
-      } catch ( Exception e ) {
-         logger.error( e.getMessage( ) , e );
-      }
-      return streamElement;
-   }
    
-   public void run ( ) {
-	  reading = new ImageWrapper( getImage( ) );
-	  int i=0;
-      while ( isActive( ) ) {
-         if (isLiveViewEnabled) {
-        	  Graphics2D graphics2D = ( Graphics2D ) lable.getGraphics( );
-        	  graphics2D.drawImage( reading.getImage( ) , 0 , 0 , null );
-         }
-         if ( listeners.isEmpty( ) ) continue;
-         //if ( lastPicture++ % INTERVAL != 0 ) continue;
-        // System.out.println("CALLED"+i++);
-         reading.setImage( getImage( ) );
-         postStreamElement( getStreamElement( ) );
-      }
-   }
    
    public void dispose ( ) {
       source.disconnect( );
@@ -311,28 +442,20 @@ public class WebCamWrapper extends AbstractWrapper implements ControllerListener
       deviceProc.deallocate( );
       deviceProc.close( );
       ds.disconnect( );
-      if ( mainFrame != null ) mainFrame.dispose( );
+      if ( this.mainFrame != null ){
+    	  this.mainFrame.dispose( );
+      }
       threadCounter--;
    }
-   public String getWrapperName() {
-    return "usb webcam camera ov511 ov516";
-}
    
-   public static void main ( String [ ] args ) {
-	   PropertyConfigurator.configure( DEFAULT_GSN_LOG4J_PROPERTIES );
-	   if (args.length==0)
-		   printDeviceList();
-	   else if (args.length==1) {
-		   System.out.println("Trying to connect to capturing device: "+args[0]);
-		   WebCamWrapper test = new WebCamWrapper( );
-		   boolean initialization = test.webcamInitialization( true ,args[0]); 
-		   if ( initialization ) test.start( );
-		   else
-			   System.out.println( "Start Failed." );
-	   }else {
-		   System.err.println("You can call this method either without any argument to get the list of the devices and with the arguments to capture.");
-	   }
+   
+   public String getWrapperName() {
+	   return "WebCamWrapper";
    }
+   
+  
+   
+   
    public static void printDeviceList() {
 	   System.out.println("List of capturing devices: ");
 	   Vector devices = CaptureDeviceManager.getDeviceList(null);

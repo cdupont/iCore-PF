@@ -36,6 +36,7 @@
 				<address wrapper="gps-test">
 					<predicate key="rate">1000</predicate>
 					<predicate key="picture">images/coin.jpeg</predicate>
+					<predicate key="picture">images/coin.jpeg</predicate>
 				</address>
 				<query>select * from wrapper</query>
 			</source>

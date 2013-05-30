@@ -19,15 +19,15 @@
 
                         def publicContent = "The HEAP maxima has been reached: " + HEAP + " at " + new Date();
                         def privateContent = "Dear John Doe, I sugger you take a look to the last HEAP value: " + HEAP;
-                        def twitterUser = "timaret";
-                        def twitterPassword = "theTwitterPassword";
+                        def twitterUser = "user";
+                        def twitterPassword = "pwd";
                         def privateRecipient = "mr0111";
 
                         // update the user public status
                         updateTwitterStatus(twitterUser, twitterPassword, publicContent);
 
                         // send a private message to the 'mr0111' twitter user.
-                        sendTwitterMessage(twitterUser, twitterPassword, privateContent, privateRecipient);
+                        //sendTwitterMessage(twitterUser, twitterPassword, privateContent, privateRecipient);
                     }
                 ]]>
             </param>

@@ -1,0 +1,38 @@
+<virtual-sensor name="STREAM_TABLET" priority="10">
+	<processing-class>
+		<class-name>gsn.vsensor.ImageRecognitionVS</class-name>
+		<init-params>
+			<param name="recognition">null</param>
+		</init-params>
+		<output-structure>
+				<field name="image" type="binary:image/jpeg" />
+		</output-structure>
+	</processing-class>
+	<description>This sensor captures frames from a sarxos webcam and interprets them as qr code or licence plate
+	</description>
+	<life-cycle pool-size="10" />
+	<addressing>
+		<predicate key="metadata">image metadata</predicate>
+	</addressing>
+	<streams>
+		<stream name="RemoteCameraStream2">
+			<source alias="RCS2" sampling-rate="1" storage-size="1">
+				<address wrapper="sarxosremotecam">
+					<predicate key="webcam-name">GALAXYSTREAM</predicate>
+					<predicate key="address">http://192.168.9.146:8080/shot.jpg</predicate>
+					<predicate key="capture-rate">500</predicate>
+					<predicate key="max-posts">-1</predicate>
+					<predicate key="live-view">false</predicate>
+					<predicate key="mode">pull</predicate>
+					<predicate key="authentication">false</predicate>
+					<predicate key="user"></predicate>
+					<predicate key="password"></predicate>
+				</address>
+				<query>select * from wrapper</query>
+			</source>
+			<query>select IMAGE from RCS2</query>
+		</stream>
+	</streams>
+</virtual-sensor>
+
+

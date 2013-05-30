@@ -1,0 +1,27 @@
+<virtual-sensor name="MultiFormatSample" priority="10">
+	<processing-class>
+		<class-name>gsn.vsensor.BridgeVirtualSensor</class-name>
+		<init-params />
+		<output-structure>
+			<field name="temperature" type="double" />
+			<field name="light" type="double" />
+		</output-structure>
+	</processing-class>
+	<description>This sensor simulates light and temperature readings every one second.
+	</description>
+	<life-cycle pool-size="10" />
+	<addressing>
+		<predicate key="metadata">multipleSensor</predicate>
+	</addressing>
+	<streams>
+		<stream name="ms">
+			<source alias="source1" sampling-rate="1" storage-size="1">
+				<address wrapper="multiformat"> </address>
+				<query>SELECT * FROM wrapper</query>
+			</source>
+			<query>SELECT temperature, light FROM source1</query>
+		</stream>
+	</streams>
+</virtual-sensor>
+
+

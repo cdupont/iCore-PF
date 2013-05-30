@@ -56,7 +56,7 @@ public class ChartVirtualSensor extends AbstractVirtualSensor {
    
    public boolean initialize ( ) {
       /**
-       * TODO : Checking if the user provides the arguements currectly. TODO :
+       * TODO : Checking if the user provides the arguments correctly. TODO :
        * This can now plot only for one input stream value.
        */
       TreeMap <  String , String > params = getVirtualSensorConfiguration( ).getMainClassInitialParams( );

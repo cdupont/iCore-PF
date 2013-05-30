@@ -124,7 +124,9 @@ public class MatlabEngine {
 				isOpen = true;
 			}
 			// Wait for the Matlab process to respond.
-			receive();
+			//massimo: commented receive!
+			System.out.println("COMMENTED RECEIVE!!!");
+			//receive();
 		}
 		catch(IOException e) {
       System.err.println("Matlab could not be opened.");
@@ -206,7 +208,7 @@ public class MatlabEngine {
 	 * Receive data from the Matlab process.
 	 */
 	private void receive() throws IOException {
-
+		System.out.println("receive: enter");
 		int charsRead = 0;
 		int numberToRead;
 		
@@ -235,6 +237,7 @@ public class MatlabEngine {
 												 +" the Matlab process.");
 			throw(e);
 		}
+ 		System.out.println("receive: exit");
 	}
 
 	/**

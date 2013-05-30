@@ -27,10 +27,10 @@ public class MatlabVS extends AbstractVirtualSensor {
 	 * @see gsn.vsensor.AbstractVirtualSensor#dataAvailable(java.lang.String, gsn.beans.StreamElement)
 	 */
 	@Override
-	public void dataAvailable(String inputStreamName,
-			StreamElement streamElement) {
+	public void dataAvailable(String inputStreamName, StreamElement streamElement) {
 	
-		if(streamElement.getFieldTypes().length == nbArgs+1)
+		//if(streamElement.getFieldTypes().length == nbArgs+1)
+		if(streamElement.getFieldTypes().length == nbArgs)
 			for(int i = 0; i < nbArgs; i++)
 				parameters[i] = (Double) streamElement.getData()[i];
 		Double answer;
@@ -45,6 +45,15 @@ public class MatlabVS extends AbstractVirtualSensor {
 				matlabCommand = matlabCommand + ")";
 			if(logger.isDebugEnabled())
 				logger.debug("Calling matlab engine with command: " + matlabCommand);
+			
+			//aggiunto da massimo
+			try {
+                // Matlab start command:
+                engine.open("matlab -nosplash -nojvm");
+                } catch (Exception e) {
+                    logger.warn(e);
+                }
+			//aggiunto da massimo
 			engine.evalString(matlabCommand);
 			String matlabAnswer = engine.getOutputString(100);
 			if(logger.isDebugEnabled())
@@ -85,11 +94,11 @@ public class MatlabVS extends AbstractVirtualSensor {
 		engine = new MatlabEngine();
         try {
                 // Matlab start command:
-                engine.open("matlab -nosplash -nojvm");
+                //engine.open("matlab -nosplash -nojvm");
                 // Display output:
-                if(logger.isDebugEnabled())
-                	logger.debug(engine.getOutputString(500));
-                String functionName = params.get("function");
+                //if(logger.isDebugEnabled())
+                //	logger.debug(engine.getOutputString(500));
+                functionName = params.get("function");
                 if(functionName == null || functionName.trim().equals(""))
                 	functionName = defaultFunctionName;
                 if(logger.isDebugEnabled())

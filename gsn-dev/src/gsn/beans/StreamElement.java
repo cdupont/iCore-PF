@@ -168,7 +168,7 @@ public final class StreamElement implements Serializable {
 			try{
 				verifyTypeCompatibility(fieldTypes[i], data[i]);
 			}catch(IllegalArgumentException e){
-				throw new IllegalArgumentException("The newly constructed Stream Element is not consistent for the " + ( i + 1 ) + "th field.", e);
+				throw new IllegalArgumentException("The newly constructed Stream Element is not consistent for the " + ( i + 1 ) + "-th field.", e);
 			}
 		}
 	}

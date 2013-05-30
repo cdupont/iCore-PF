@@ -50,8 +50,7 @@ public class DiskSpaceWrapper extends AbstractWrapper{
             
             //convert to MB
             totalFreeSpace = totalFreeSpace / (1024 * 1024);
-            StreamElement streamElement = new StreamElement(new String[]{"FREE_SPACE"}, new Byte[]{DataTypes.BIGINT}, new Serializable[] {totalFreeSpace
-            },System.currentTimeMillis());
+            StreamElement streamElement = new StreamElement(new String[]{"FREE_SPACE"}, new Byte[]{DataTypes.BIGINT}, new Serializable[] {totalFreeSpace},System.currentTimeMillis());
             postStreamElement(streamElement);
         }
     }

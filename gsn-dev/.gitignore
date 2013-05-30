@@ -1,0 +1,14 @@
+/bin
+/build
+
+/.externalToolBuilders
+/.setting
+/logs
+/temp
+/reports
+.project
+.classpath
+*.class
+*.log
+*.db
+*.*~*

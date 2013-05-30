@@ -1,0 +1,31 @@
+<virtual-sensor name="MatlabVS" priority="11">
+	<processing-class>
+		<class-name>gsn.vsensor.MatlabVS2</class-name>
+		<init-params>
+			<param name="function">randomGenerator</param>
+			<param name="arguments">1</param>
+		</init-params>
+		<output-structure>
+			<field name="matlab_output" type="double"  />
+		</output-structure>
+
+	</processing-class>
+	<description>this virtual sensor calls a matlab function</description>
+	<life-cycle pool-size="2" />
+	<addressing>
+		<predicate key="geographical">ROOM 1</predicate>
+	</addressing>
+	<storage history-size="1" />
+	<streams>
+		<stream name="Matlab1">
+			<source alias="matlab_in" storage-size="1" sampling-rate="1">
+				<address wrapper="local">
+					<!-- <predicate key="query">select * from Libelium_10</predicate> -->
+					<predicate key="name">Libelium_10</predicate>
+				</address>
+				<query>select Temperature from wrapper</query>
+			</source>
+			<query>select * from matlab_in</query>
+		</stream>
+	</streams>
+</virtual-sensor>

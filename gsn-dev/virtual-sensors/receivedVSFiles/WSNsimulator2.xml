@@ -1,0 +1,29 @@
+<virtual-sensor name="WSNSimulator2" priority="10">
+	<processing-class>
+		<class-name>gsn.vsensor.BridgeVirtualSensor</class-name>
+		<init-params />
+		<output-structure>
+			<field name="parent_id" type="integer" />
+			<field name="node_id" type="integer" />
+			<field name="temperature" type="integer" />
+		</output-structure>
+	</processing-class>
+	<description>First implementation by Massimo
+	</description>
+	<life-cycle pool-size="10" />
+	<addressing>
+	</addressing>
+	<storage history-size="5m" />
+	<streams>
+		<stream name="input1">
+			<source alias="source1" sampling-rate="1" storage-size="1">
+				<address wrapper="wsns">
+					<predicate key="rate">100</predicate>
+					<predicate key="node_count">100</predicate>
+				</address>
+				<query>SELECT * FROM wrapper</query>
+			</source>
+			<query>SELECT * FROM source1</query>
+		</stream>
+	</streams>
+</virtual-sensor>

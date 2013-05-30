@@ -1,0 +1,34 @@
+<virtual-sensor name="jmfcameraVS" priority="10">
+	<processing-class>
+		<class-name>gsn.vsensor.ImageRecognitionVS</class-name>
+		<init-params>
+			<param name="recognition">null</param>
+		</init-params>
+		<output-structure>
+
+				<field name="image" type="binary:image/jpeg" />
+				<!--				<field name="decoded" type="binary:text/plain" />-->
+		</output-structure>
+	</processing-class>
+	<description>First implementation of a usb-camera wrapper (Massimo)</description>
+	<life-cycle pool-size="10" />
+	<addressing>
+		<predicate key="geographical">My webcam</predicate>
+	</addressing>
+	<storage history-size="1" />
+	<streams>
+		<stream name="data">
+			<source alias="input" storage-size="1" sampling-rate="1">
+				<address wrapper="jmfcamera">
+					<predicate key="webcam-name">vfw:Microsoft WDM Image Capture (Win32):0</predicate>
+					<predicate key="capture-rate">100</predicate>
+					<predicate key="live-view">true</predicate>
+					<predicate key="max-posts">-1</predicate>
+					
+				</address>
+				<query>select * from WRAPPER</query>
+			</source>
+			<query>select * from input</query>
+		</stream>
+	</streams>
+</virtual-sensor> 

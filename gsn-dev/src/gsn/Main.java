@@ -50,6 +50,11 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Random;
 
+import javax.media.CaptureDeviceInfo;
+import javax.media.CaptureDeviceManager;
+import javax.media.MediaLocator;
+
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.http.security.Constraint;
@@ -238,6 +243,11 @@ public final class Main {
 	public static final String     DEFAULT_WEB_APP_PATH             = "webapp";
 
 	public static void main ( String [ ]  args)  {
+		
+		
+		
+	    
+	    
 		Main.gsnControllerPort = Integer.parseInt(args[0]) ;
 		updateSplashIfNeeded(new String[] {"GSN is trying to start.","All GSN logs are available at: logs/gsn.log"});
 		try {
@@ -258,6 +268,7 @@ public final class Main {
 	 * into the class implementing DataSource.
 	 */
 	private static  Properties wrappers ;
+	
 
 	private  ContainerConfig                       containerConfig;
 
@@ -309,14 +320,14 @@ public final class Main {
 		return conf;
 	}
 
-	//FIXME: COPIED_FOR_SAFE_STOAGE
+	//FIXME: COPIED_FOR_SAFE_STORAGE
 	public static Properties getWrappers()  {
 		if (singleton==null )
 			return WrappersUtil.loadWrappers(new HashMap<String, Class<?>>());
 		return singleton.wrappers;
 	}
     
-	//FIXME: COPIED_FOR_SAFE_STOAGE
+	//FIXME: COPIED_FOR_SAFE_STORAGE
 	public  static Class < ? > getWrapperClass ( String id ) {
 		try {
 			String className =  getWrappers().getProperty(id);
@@ -333,7 +344,7 @@ public final class Main {
 	}
 
 	/**
-	 * Get's the GSN configuration without starting GSN.
+	 * Gets the GSN configuration without starting GSN.
 	 * @return
 	 * @throws Exception
 	 */

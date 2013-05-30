@@ -53,7 +53,8 @@ public abstract class AbstractVirtualSensor {
 		try {
 			validateStreamElement( streamElement,adjust );
 		} catch ( Exception e ) {
-			logger.error( e.getMessage( ) , e );
+			//logger.error( e.getMessage( ) , e );
+			logger.info( e.getMessage( ) , e );
 			return;
 		}
 		if ( !streamElement.isTimestampSet( ) ) streamElement.setTimeStamp( System.currentTimeMillis( ) );
@@ -69,10 +70,17 @@ public abstract class AbstractVirtualSensor {
 		try {
 			ContainerImpl.getInstance().publishData( this ,streamElement);
 		} catch (SQLException e) {
-			if (e.getMessage().toLowerCase().contains("duplicate entry"))
-				logger.info(e.getMessage(),e);
-			else
-				logger.error(e.getMessage(),e);
+			if (e.getMessage().toLowerCase().contains("duplicate entry")){
+				//logger.info(e.getMessage(),e);
+				logger.info("duplicate entry problem!");
+			}
+			else{
+				//logger.error(e.getMessage(),e);
+				//logger.info(e.getMessage(),e);
+				//MASSIMO: FIX THIS PROBLEM OF PRIMARY KEY, PLEASE
+				//FIXME
+				logger.debug("strange problem [to be fixed!!!]");
+			}
 		}
 	}
 	/**

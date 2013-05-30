@@ -1,0 +1,60 @@
+<virtual-sensor name="TwitterLicencePlate" priority="10">
+    <processing-class>
+        <class-name>gsn.processor.ScriptletProcessor</class-name>
+        <init-params>
+            <param name="persistant">false</param>
+            <param name="scriptlet">
+                <![CDATA[
+                
+                	// Example of getting a logger
+                    def logger = org.apache.log4j.Logger.getLogger(gsn.processor.ScriptletProcessor.class);
+                	
+                	if ( ! isdef('current')){
+                        current = "";
+                	}
+                    // Comparing 
+                    if (current != DECODED ) {
+                		current = DECODED;
+                
+	                	def parsed = DECODED as String;
+	                	def publicContent = " Just read this LP: " + parsed + ". Do you know it??";
+						
+	
+						def prependTime = true;
+						// update the user public status
+                
+                		logger.warn('[PRIVACY CONCERN] Hey, I will not post a LP to twitter');
+						//UpdateTwitterStatus(publicContent, prependTime);
+				
+						// send a private message to catharsis79_ twitter user.
+	                	//PAY ATTENTION TO TWITTER SPAMMING POLICIES!!!
+	                	//def friendRecipient = "catharsis79_";
+	                	//def privateContent = " hey this is just a test: you can delete it";
+						//SendTwitterMessage(friendRecipient, privateContent, prependTime);
+                	}
+	                else{
+                		logger.info('I HAVE ALREADY SENT THIS LP...just dropping it');
+	                }
+                ]]>
+            </param>
+        </init-params>
+        <output-structure/>
+    </processing-class>
+    <description>
+        This virtual sensor pushes a decoded LP to my twitter
+    </description>
+    <addressing/>
+    <storage history-size="1"/>
+    <streams>
+        <stream name="stream1">
+            <source alias="source1" storage-size="1" sampling-rate="1">
+                <address wrapper="local">
+                    <predicate key="name">LP_FROMFOLDER</predicate>
+<!--					<predicate key="query">select decoded from SarxosRemoteCamRecognitionVS</predicate-->
+                </address>
+                <query>select decoded from wrapper</query>
+            </source>
+            <query>select * from source1</query>
+        </stream>
+    </streams>
+</virtual-sensor>

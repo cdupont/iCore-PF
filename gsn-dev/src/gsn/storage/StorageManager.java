@@ -664,10 +664,15 @@ public abstract class StorageManager {
                 logger.warn("Inserting a stream element failed : "
                         + streamElement.toString(), e);
         } catch (SQLException e) {
-            if (e.getMessage().toLowerCase().contains("duplicate entry"))
-                logger.info("Error occurred on inserting data to the database, an stream element dropped due to: " + e.getMessage() + ". (Stream element: " + streamElement.toString() + ")+ Query: " + query);
-            else
-                logger.warn("Error occurred on inserting data to the database, an stream element dropped due to: " + e.getMessage() + ". (Stream element: " + streamElement.toString() + ")+ Query: " + query);
+            if (e.getMessage().toLowerCase().contains("duplicate entry")){
+                logger.info("Error occurred on inserting data to the database, a stream element dropped due to: " + e.getMessage() + ". (Stream element: " + streamElement.toString() + ")+ Query: " + query);
+            }
+            else{
+            	//MASSIMO: FIX THIS PROBLEM OF PRIMARY KEY, PLEASE
+            	//FIXME
+            	logger.debug("Error occurred on inserting data to the database, a stream element dropped due to: " + e.getMessage() + ". (Stream element: " + streamElement.toString() + ")+ Query: " + query);
+                //logger.warn("Error occurred on inserting data to the database, a stream element dropped due to: " + e.getMessage() + ". (Stream element: " + streamElement.toString() + ")+ Query: " + query);
+            }
             throw e;
         }
         finally {

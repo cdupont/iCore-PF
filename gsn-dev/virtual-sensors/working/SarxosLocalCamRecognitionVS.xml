@@ -1,0 +1,43 @@
+<virtual-sensor name="SarxosLocalCamRecognitionVS" priority="10">
+	<processing-class>
+		<class-name>gsn.vsensor.ImageRecognitionVS</class-name>
+		<init-params>
+			<param name="recognition">null</param>
+		</init-params>
+		<output-structure>
+<!--				<field name="decoded" type="binary:text/plain" />-->
+				<field name="image" type="binary:image/jpeg" />
+		</output-structure>
+	</processing-class>
+	<description>This sensor captures frames from a sarxos webcam and interprets them as qr code or licence plates
+	</description>
+	<life-cycle pool-size="10" />
+	<addressing>
+		<predicate key="metadata">image metadata</predicate>
+	</addressing>
+	<streams>
+		<stream name="LocalCamera">
+			<source alias="localsource" sampling-rate="1" storage-size="1">
+				<address wrapper="sarxoswebcam">
+					<predicate key="capture-rate">100</predicate>
+					<predicate key="live-view">true</predicate>
+					<predicate key="webcam-name">ManyCam Virtual Webcam 0</predicate>
+<!--					<predicate key="webcam-name">GT 9300</predicate>-->
+					<predicate key="local">true</predicate>
+					
+<!--					<predicate key="address">192.168.9.140</predicate>-->
+<!--					<predicate key="address">192.168.1.67</predicate>-->
+<!--					<predicate key="port">8080</predicate>-->
+<!--					<predicate key="suffix">shot.jpg</predicate>-->
+<!--					<predicate key="authentication">false</predicate>-->
+<!--					<predicate key="user"></predicate>-->
+<!--					<predicate key="password"></predicate>-->
+				</address>
+				<query>select * from wrapper</query>
+			</source>
+			<query>select * from localsource</query>
+		</stream>
+	</streams>
+</virtual-sensor>
+
+

@@ -73,6 +73,8 @@ public class SerialWrapper extends AbstractWrapper implements SerialPortEventLis
 	private int                     stopBits      = SerialPort.STOPBITS_1;
 
 	private int                     parity        = SerialPort.PARITY_NONE;
+	
+	private final String DEFAULT_SEPARATOR= "["+ System.getProperty("line.separator") +"]";
 
 	private  DataField [] dataField     ;
 
@@ -106,10 +108,17 @@ public class SerialWrapper extends AbstractWrapper implements SerialPortEventLis
 		}
 
 		inputSeparator = addressBean.getPredicateValue( "inputseparator" );
-		if ( inputSeparator == null ) 
+		if ( inputSeparator == null ){
 			useInputSeparator = false;
-		else 
+		}
+		else{
 			useInputSeparator = true;
+			
+			//added by Massimo
+			if (inputSeparator.equalsIgnoreCase("system")){
+				inputSeparator=DEFAULT_SEPARATOR;
+			}
+		}
 
 
 		String representation = addressBean.getPredicateValue( "representation" );
@@ -127,25 +136,24 @@ public class SerialWrapper extends AbstractWrapper implements SerialPortEventLis
 
 		String newBaudRate = addressBean.getPredicateValue( "baudrate" );
 		if ( newBaudRate != null && newBaudRate.trim( ).length( ) > 0 ) {
-			baudRate = Integer.parseInt( newBaudRate ); // TODO: check validity of
-			// baudrate?
+			baudRate = Integer.parseInt( newBaudRate ); 
 		}
 
 		String newDataBits = addressBean.getPredicateValue( "databits" );
 		if ( newDataBits != null && newDataBits.trim( ).length( ) > 0 ) {
 			switch ( Integer.parseInt( newDataBits ) ) {
-			case 5 :
-				dataBits = SerialPort.DATABITS_5;
-				break;
-			case 6 :
-				dataBits = SerialPort.DATABITS_6;
-				break;
-			case 7 :
-				dataBits = SerialPort.DATABITS_7;
-				break;
-			case 8 :
-				dataBits = SerialPort.DATABITS_8;
-				break;
+				case 5 :
+					dataBits = SerialPort.DATABITS_5;
+					break;
+				case 6 :
+					dataBits = SerialPort.DATABITS_6;
+					break;
+				case 7 :
+					dataBits = SerialPort.DATABITS_7;
+					break;
+				case 8 :
+					dataBits = SerialPort.DATABITS_8;
+					break;
 			}
 		}
 
@@ -153,18 +161,34 @@ public class SerialWrapper extends AbstractWrapper implements SerialPortEventLis
 		if ( newStopBits != null && newStopBits.trim( ).length( ) > 0 ) {
 			float newstopbits = Float.parseFloat( newStopBits );
 
-			if ( newstopbits == 1.0 ) stopBits = SerialPort.STOPBITS_1;
-			if ( newstopbits == 2.0 ) stopBits = SerialPort.STOPBITS_2;
-			if ( newstopbits == 1.5 ) stopBits = SerialPort.STOPBITS_1_5;
+			if ( newstopbits == 1.0 ){
+				stopBits = SerialPort.STOPBITS_1;
+			}
+			else if ( newstopbits == 2.0 ){
+				stopBits = SerialPort.STOPBITS_2;
+			}
+			else if ( newstopbits == 1.5 ){ 
+				stopBits = SerialPort.STOPBITS_1_5;
+			}
 		}
 
 		String newParity = addressBean.getPredicateValue( "parity" );
 		if ( newParity != null && newParity.trim( ).length( ) > 0 ) {
-			if ( newParity.equals( "PARITY_EVEN" ) ) parity = SerialPort.PARITY_EVEN;
-			if ( newParity.equals( "PARITY_MARK" ) ) parity = SerialPort.PARITY_MARK;
-			if ( newParity.equals( "PARITY_NONE" ) ) parity = SerialPort.PARITY_NONE;
-			if ( newParity.equals( "PARITY_ODD" ) ) parity = SerialPort.PARITY_ODD;
-			if ( newParity.equals( "PARITY_SPACE" ) ) parity = SerialPort.PARITY_SPACE;
+			if ( newParity.equals( "PARITY_EVEN" ) ){
+				parity = SerialPort.PARITY_EVEN;
+			}
+			else if ( newParity.equals( "PARITY_MARK" ) ){
+				parity = SerialPort.PARITY_MARK;
+			}
+			else if ( newParity.equals( "PARITY_NONE" ) ){
+				parity = SerialPort.PARITY_NONE;
+			}
+			else if ( newParity.equals( "PARITY_ODD" ) ){
+				parity = SerialPort.PARITY_ODD;
+			}
+			else if ( newParity.equals( "PARITY_SPACE" ) ){
+				parity = SerialPort.PARITY_SPACE;
+			}
 		}
 
 		String newflowControlMode = addressBean.getPredicateValue( "flowcontrolmode" );
@@ -174,11 +198,21 @@ public class SerialWrapper extends AbstractWrapper implements SerialPortEventLis
 			String modes[] = newflowControlMode.split( "\\|" );
 
 			for ( int i = 0 ; i < modes.length ; i++ ) {
-				if ( modes[ i ].equals( "FLOWCONTROL_NONE" ) ) flowControlMode |= SerialPort.FLOWCONTROL_NONE;
-				if ( modes[ i ].equals( "FLOWCONTROL_RTSCTS_IN" ) ) flowControlMode |= SerialPort.FLOWCONTROL_RTSCTS_IN;
-				if ( modes[ i ].equals( "FLOWCONTROL_RTSCTS_OUT" ) ) flowControlMode |= SerialPort.FLOWCONTROL_RTSCTS_OUT;
-				if ( modes[ i ].equals( "FLOWCONTROL_XONXOFF_IN" ) ) flowControlMode |= SerialPort.FLOWCONTROL_XONXOFF_IN;
-				if ( modes[ i ].equals( "FLOWCONTROL_XONXOFF_OUT" ) ) flowControlMode |= SerialPort.FLOWCONTROL_XONXOFF_OUT;
+				if ( modes[ i ].equals( "FLOWCONTROL_NONE" ) ){
+					flowControlMode |= SerialPort.FLOWCONTROL_NONE;
+				}
+				else if ( modes[ i ].equals( "FLOWCONTROL_RTSCTS_IN" ) ){
+					flowControlMode |= SerialPort.FLOWCONTROL_RTSCTS_IN;
+				}
+				else if ( modes[ i ].equals( "FLOWCONTROL_RTSCTS_OUT" ) ){
+					flowControlMode |= SerialPort.FLOWCONTROL_RTSCTS_OUT;
+				}
+				else if ( modes[ i ].equals( "FLOWCONTROL_XONXOFF_IN" ) ){
+					flowControlMode |= SerialPort.FLOWCONTROL_XONXOFF_IN;
+				}
+				else if ( modes[ i ].equals( "FLOWCONTROL_XONXOFF_OUT" ) ){
+					flowControlMode |= SerialPort.FLOWCONTROL_XONXOFF_OUT;
+				}
 			}
 
 			if ( flowControlMode == 0 ) {
@@ -402,10 +436,10 @@ public class SerialWrapper extends AbstractWrapper implements SerialPortEventLis
 
 	public void serialEvent ( SerialPortEvent e ) {
 //		if ( logger.isDebugEnabled( ) ) logger.debug( "Serial wrapper received a serial port event, reading..." );
-//		if ( !isActive( ) || listeners.isEmpty( ) ) {
-//		if ( logger.isDebugEnabled( ) ) logger.debug( "Serial wrapper dropped the input b/c there is no listener there or the wrapper is inactive." );
-//		return;
-//		}
+		if ( !isActive( ) || listeners.isEmpty( ) ) {
+			if ( logger.isDebugEnabled( ) ) logger.debug( "Serial wrapper dropped the input because there is no listener there or the wrapper is inactive." );
+				return;
+		}
 		// Determine type of event.
 		switch ( e.getEventType( ) ) {
 		// Read data until -1 is returned.
@@ -418,8 +452,13 @@ public class SerialWrapper extends AbstractWrapper implements SerialPortEventLis
 			 * inputBuffer[index++] = (byte) newData; } } catch (IOException ex) {
 			 * System.err.println(ex); return; } }
 			 */
+			
+			
 			try {
 				is.read( inputBuffer );
+				
+				
+				
 			} catch ( IOException ex ) {
 				logger.warn( "Serial port wrapper couldn't read data : " + ex );
 				return;
@@ -428,14 +467,33 @@ public class SerialWrapper extends AbstractWrapper implements SerialPortEventLis
 			// If break event append BREAK RECEIVED message.
 		case SerialPortEvent.BI :
 			// messageAreaIn.append("\n--- BREAK RECEIVED ---\n");
+			logger.debug("ended in SerialPortEvent.BI");
 		}
 
-		if ( logger.isDebugEnabled( ) ) 
+		if ( logger.isDebugEnabled( ) ){
 			logger.debug( new StringBuilder( "Serial port wrapper processed a serial port event, stringbuffer is now : " ).append( new String(inputBuffer) ).toString( ) );
+		}
 		if ( useInputSeparator ) {
-			for ( String chunk : new String(inputBuffer).split( inputSeparator ) ) 
-				if ( chunk.length( ) > 0 ) 
+			String[] chunks=new String(inputBuffer).split( inputSeparator);
+			for (int i=0;i<chunks.length;i++){
+				if (chunks[i].length()>0){
+					post_item(chunks[i]);
+					if ( logger.isDebugEnabled( ) ){
+						logger.debug(new StringBuilder("TRANSMITTED CHUNK [" + i + "]=" + chunks[i]));
+					}
+				}
+			}
+			
+			/*int mycounter=0;
+			for ( String chunk : new String(inputBuffer).split( inputSeparator ) ){
+				if ( chunk.length( ) > 0 ){
 					post_item(chunk);
+					if ( logger.isDebugEnabled( ) ){
+						logger.debug(new StringBuilder("TRANSMITTED CHUNK [" + mycounter + "]=" + chunk));
+						mycounter++;
+					}
+				}
+			}*/
 		} else { //without separator character.
 			post_item(new String(inputBuffer) );
 		}

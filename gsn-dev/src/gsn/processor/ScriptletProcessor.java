@@ -270,8 +270,20 @@ public class ScriptletProcessor extends AbstractVirtualSensor {
 
     protected Binding updateContext(StreamElement se) {
         if (se != null) {
+        	//logger.warn("stream element not EMPTY...good to know...");
             for (String fieldName : se.getFieldNames()) {
-                context.setVariable(fieldName.toUpperCase(), se.getData(fieldName));
+            	
+            	//PARSE HERE BINARY STREAMS TO STRING!!!!
+            	if (se.getType(fieldName)==4){
+            		
+            		byte[] bytes = (byte[]) se.getData(fieldName.toUpperCase());
+            		String s = new String(bytes);
+            		
+            		context.setVariable(fieldName.toUpperCase(), s);
+            	}
+            	else{
+            		context.setVariable(fieldName.toUpperCase(), se.getData(fieldName));
+            	}
             }
             context.setVariable("TIMED", se.getTimeStamp());
         }

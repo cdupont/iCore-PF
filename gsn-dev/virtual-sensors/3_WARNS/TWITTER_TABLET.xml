@@ -1,0 +1,57 @@
+<virtual-sensor name="TWITTER_TABLET" priority="10">
+    <processing-class>
+        <class-name>gsn.processor.ScriptletProcessor</class-name>
+        <init-params>
+            <param name="persistant">false</param>
+            <param name="scriptlet">
+                <![CDATA[
+                
+                	// Example of getting a logger
+                    def logger = org.apache.log4j.Logger.getLogger(gsn.processor.ScriptletProcessor.class);
+
+                	if ( ! isdef('current')){
+                        current = "";
+                	}
+                    // Comparing 
+                    if (current != DECODED ) {
+                		current = DECODED;
+	                	def parsed = DECODED as String;
+	                	def publicContent = " Just read this QR from your TABLET: " + parsed + ". Do you know it??";
+						
+	
+						def prependTime = true;
+						// update the user public status
+						UpdateTwitterStatus(publicContent, prependTime);
+				
+						// send a private message to catharsis79_ twitter user.
+	                	//PAY ATTENTION TO TWITTER SPAMMING POLICIES!!!
+	                	def friendRecipient = "catharsis79_";
+	                	def privateContent = "hey this is just a test...you can delete it";
+						//SendTwitterMessage(friendRecipient, privateContent, prependTime);
+                	}
+                else{
+                	logger.info('I HAVE ALREADY SENT THIS QR...just dropping it');
+                }
+                ]]>
+            </param>
+        </init-params>
+        <output-structure/>
+    </processing-class>
+    <description>
+        This virtual sensor pushes a decoded QR to my twitter
+    </description>
+    <addressing/>
+    <storage history-size="1"/>
+    <streams>
+        <stream name="streamTwitterQR2">
+            <source alias="STQR2" storage-size="1" sampling-rate="1">
+                <address wrapper="local">
+                    <predicate key="name">QR_TABLET</predicate>
+<!--					<predicate key="query">select decoded from SarxosRemoteCamRecognitionVS</predicate-->
+                </address>
+                <query>select DECODED from wrapper</query>
+            </source>
+            <query>select * from STQR2</query>
+        </stream>
+    </streams>
+</virtual-sensor>

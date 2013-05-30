@@ -237,7 +237,7 @@ public final class Modifications {
 								sensorConfig = Mappings.getVSensorConfig(vsName);
 							if(sensorConfig == null){
 								if(logger.isDebugEnabled())
-									logger.debug("There is no virtaul sensor with name >" +  vsName + "< in the >" + config.getName() + "< virtual sensor");
+									logger.debug("There is no virtual sensor with name >" +  vsName + "< in the >" + config.getName() + "< virtual sensor");
 
 								//If this addressing element is the last one, remove VS from the graph
 								if(addressingIndex == addressing.length - 1 && !hasValidAddressing){

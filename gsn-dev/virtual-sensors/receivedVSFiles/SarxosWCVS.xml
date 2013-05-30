@@ -1,0 +1,30 @@
+<virtual-sensor name="SarxosWCVS" priority="10">
+	<processing-class>
+		<class-name>gsn.vsensor.BridgeVirtualSensor</class-name>
+		<init-params />
+		<output-structure>
+				<field name="image" type="binary:image/jpeg" />
+		</output-structure>
+	</processing-class>
+	<description>This sensor captures frame from sarxos webcams
+	</description>
+	<life-cycle pool-size="10" />
+	<addressing>
+		<predicate key="metadata">image metadata</predicate>
+	</addressing>
+	<streams>
+		<stream name="camera1">
+			<source alias="source1" sampling-rate="1" storage-size="1">
+				<address wrapper="sarxoswebcam">
+					<predicate key="capture-rate">100</predicate>
+					<predicate key="live-view">true</predicate>
+					<predicate key="webcam-name">ManyCam Video Source 1</predicate>
+				</address>
+				<query>select * from wrapper</query>
+			</source>
+			<query>select * from source1</query>
+		</stream>
+	</streams>
+</virtual-sensor>
+
+

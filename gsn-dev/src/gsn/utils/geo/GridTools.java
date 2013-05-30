@@ -3,7 +3,7 @@ package gsn.utils.geo;
 import gsn.Main;
 import gsn.beans.DataTypes;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.ByteArrayInputStream;
@@ -191,9 +191,9 @@ public class GridTools {
                         for (int i=0;i<array.length;i++) {
                             JSONArray anArray = new JSONArray();
                             for (int j=0;j<array[i].length;j++) {
-                                anArray.put(array[i][j]);
+                                //anArray.put(array[i][j]);  //FIXME: MASSIMO COMMENTED
                             }
-                            jsonArray.put(anArray);
+                            //jsonArray.put(anArray); //FIXME: MASSIMO COMMENTED
                         }
                         jsonResponse.put(columnLabel[col], jsonArray);
                     } else {

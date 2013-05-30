@@ -1,0 +1,28 @@
+<virtual-sensor name="redirectedmultiFormatSample" priority="10" >
+    <processing-class>
+        <class-name>gsn.vsensor.BridgeVirtualSensor</class-name>
+        <unique-timestamps>false</unique-timestamps>     
+        <output-structure>
+            <field name="light" type="double"  />
+			<field name="temperature" type="double"  />
+        </output-structure>
+    </processing-class>
+    <description>prova</description>
+    <life-cycle pool-size="10" />
+    <addressing />
+    <storage />
+    <streams>
+        <stream name="data">
+            <source alias="source1" sampling-rate="1" storage-size="1">
+			<address wrapper="local">
+			  <predicate key="query">select * from MultiFormatSample</predicate>
+		   </address>
+		   <query>select * from wrapper</query>
+		 </source>
+            <query> select light,temperature from source1 </query>
+        </stream>
+    </streams>
+</virtual-sensor>
+
+
+ 

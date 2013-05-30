@@ -6,6 +6,7 @@ import gsn.beans.StreamElement;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -170,8 +171,12 @@ public class ImageFileWrapper extends AbstractWrapper {
             Pattern pattern = Pattern.compile(regexFileMask);
             Matcher matcher = pattern.matcher(file);
             logger.debug("("+i+") Testing... " + file);
+            
+            
             if (matcher.find()) {
                 String date = getTimeStampFromFileName(file,regexFileMask);
+                //String date = getTimeStampFromFileName(file,timeFormat);
+                
                 long epoch = strTime2Long(date,timeFormat);
                 logger.debug("Matching => "+file + " date = "+ date + " epoch = "+epoch);
                 if (epoch>latestProcessedTimestamp) {
@@ -185,6 +190,38 @@ public class ImageFileWrapper extends AbstractWrapper {
 
         return v;
     }
+    
+    
+    /*
+     * posts new image files to database
+     * returns a list of file names in a directory,
+     * which match a fileMask (given as regular expression)
+     * */
+     private Vector<String> SelectRandomImage(String dir, String regexFileMask) {
+
+         File f = new File(dir);
+         String[] files = f.list();
+
+         Arrays.sort(files);
+
+         Vector <String> v = new Vector<String>();
+         logger.debug("*** found "+files.length+" files ***");
+         
+         Random generator = new Random(); 
+         int r = generator.nextInt(files.length);
+         
+         String file = files[r];
+         
+         String date = getTimeStampFromFileName(file,regexFileMask);
+         long epoch = strTime2Long(date,timeFormat);
+         
+         v.add(file);
+         postData(dir+"/"+file,epoch);
+         
+         
+
+         return v;
+     }
 
     /*
     * Posting data to database
