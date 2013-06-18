@@ -95,6 +95,11 @@ public final class Main {
 
 		ValidityTools.checkAccessibilityOfFiles ( DEFAULT_GSN_LOG4J_PROPERTIES , WrappersUtil.DEFAULT_WRAPPER_PROPERTIES_FILE , DEFAULT_GSN_CONF_FILE );
 		ValidityTools.checkAccessibilityOfDirs ( DEFAULT_VIRTUAL_SENSOR_DIRECTORY );
+		
+		System.out.print("Checking Massimo's resource directories...");
+		ValidityTools.checkAccessibilityOfDirs ( DEFAULT_RESOURCE_DIRECTORY, DEFAULT_CLASSIFIER_DIRECTORY, DEFAULT_VIDEO_DIRECTORY, DEFAULT_CSV_DIRECTORY);
+		System.out.print("OK!\n");
+		
 		PropertyConfigurator.configure ( Main.DEFAULT_GSN_LOG4J_PROPERTIES );
 		//  initializeConfiguration();
 		try {
@@ -239,6 +244,15 @@ public final class Main {
 	public static final String     DEFAULT_GSN_CONF_FILE            = "conf/gsn.xml";
 
 	public static String     DEFAULT_VIRTUAL_SENSOR_DIRECTORY = "virtual-sensors";
+	
+	
+	public static final String     DEFAULT_RESOURCE_DIRECTORY = "resources";
+	
+	public static String     DEFAULT_CLASSIFIER_DIRECTORY = DEFAULT_RESOURCE_DIRECTORY + "/OpenCVClassifiers";
+	
+	public static String     DEFAULT_VIDEO_DIRECTORY = DEFAULT_RESOURCE_DIRECTORY + "/Videos";
+	
+	public static String     DEFAULT_CSV_DIRECTORY = DEFAULT_RESOURCE_DIRECTORY + "/CSVs";
 
 	public static final String     DEFAULT_WEB_APP_PATH             = "webapp";
 

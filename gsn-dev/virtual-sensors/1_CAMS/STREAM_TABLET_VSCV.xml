@@ -1,0 +1,42 @@
+<virtual-sensor name="STREAM_TABLET_VSCV" priority="10">
+	<processing-class>
+		<class-name>gsn.vsensor.OpenCVDetection</class-name>
+		<init-params>
+			<param name="detection">face</param>
+			<param name="scale_factor">1.1</param>
+			<param name="min_neigbors">1</param>
+			<param name="flag">1</param>
+			<param name="stream">true</param>
+		</init-params>
+		<output-structure>
+				<field name="image" type="binary:image/jpeg" />
+		</output-structure>
+	</processing-class>
+	<description>This sensor detects specific objects captured by the wrapper as jpeg images using a Haar-like cascade classifier 
+	</description>
+	<life-cycle pool-size="10" />
+	<addressing>
+		<predicate key="metadata">image metadata</predicate>
+	</addressing>
+	<streams>
+		<stream name="RemoteCameraStream">
+			<source alias="RCS" sampling-rate="1" storage-size="1">
+				<address wrapper="sarxosremotecam">
+					<predicate key="webcam-name">GALAXYSTREAM</predicate>
+					<predicate key="address">http://192.168.9.228:8080/shot.jpg</predicate>
+					<predicate key="capture-rate">500</predicate>
+					<predicate key="max-posts">-1</predicate>
+					<predicate key="live-view">false</predicate>
+					<predicate key="mode">pull</predicate>
+					<predicate key="authentication">false</predicate>
+					<predicate key="user"></predicate>
+					<predicate key="password"></predicate>
+				</address>
+				<query>select * from wrapper</query>
+			</source>
+			<query>select IMAGE from RCS</query>
+		</stream>
+	</streams>
+</virtual-sensor>
+
+
