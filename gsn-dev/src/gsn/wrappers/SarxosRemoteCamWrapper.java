@@ -35,11 +35,7 @@ import com.github.sarxos.webcam.ds.ipcam.IpCamMode;
 
 
 /*
-* This wrapper searches in a local directory for images
-* that match the file-mask (given as regular expression)
-* with the defined rate (rate parameter).
-* The timestamp for the image is created from the file name following the time-format parameter
-* See ./virtual-sensors/\S\S for an example
+* This wrapper acquires a stream from a camera
 * */
 
 public class SarxosRemoteCamWrapper extends AbstractWrapper {
@@ -48,7 +44,7 @@ public class SarxosRemoteCamWrapper extends AbstractWrapper {
     private static int threadCounter=0;
     
     
-    //public static IpCamDriver driver=null;
+
     
     public static IpCamDriver driver;
     
@@ -60,8 +56,6 @@ public class SarxosRemoteCamWrapper extends AbstractWrapper {
     private static final String PARAM_MAXPOST = "max-posts";
     private static final String PARAM_LIVEVIEW = "live-view";
     private static final String PARAM_ADDRESS = "address";
-    //private static final String PARAM_PORT = "port";
-    //private static final String PARAM_SUFFIX = "suffix";
     private static final String PARAM_AUTH = "authentication";
     private static final String PARAM_USER = "user";
     private static final String PARAM_PASSWORD = "password";
@@ -72,9 +66,6 @@ public class SarxosRemoteCamWrapper extends AbstractWrapper {
     private static final int DEFAULT_CAPTURERATE = 1000;
     private static final boolean DEFAULT_LIVEVIEW = false;
     private static final long DEFAULT_MAXPOSTS = Long.MAX_VALUE;
-    //private static final String DEFAULT_ADDRESS = "192.168.9.140";
-    //private static final int DEFAULT_PORT = 8080;
-    //private static final String DEFAULT_SUFFIX = "shot.jpg";
     private static final boolean DEFAULT_AUTH = false;
     private static final String DEFAULT_USER = "user";
     private static final String DEFAULT_PASSWORD = "password";
@@ -91,16 +82,13 @@ public class SarxosRemoteCamWrapper extends AbstractWrapper {
     
     private IpCamDevice livecam = null;
     
-    private Executor executor = Executors.newSingleThreadExecutor();
-	
+
     
     //for the GUI
     private JFrame mainFrame = null;
-	private WebcamPanel panel = null;
 	private JPanel jpanel = null;
 	
-	private JLabel jlabel =null;
-    
+
 
     private DataField[] collection = new DataField[] { new DataField ("image", "binary:image/jpeg")};
 
@@ -152,16 +140,6 @@ public class SarxosRemoteCamWrapper extends AbstractWrapper {
             	this.liveview = Boolean.parseBoolean(readString);
             } catch (NumberFormatException e) {}
         }
-        
-        
-        //force false to live-view!!!!
-        
-        if (this.liveview){
-        	logger.info("Live view mode is not implemented yet...setting live-view to FALSE!");
-        	this.liveview=false;
-        }
-        
-        
         
         //max_posts
         readString= addressBean.getPredicateValue(PARAM_MAXPOST);
@@ -223,7 +201,6 @@ public class SarxosRemoteCamWrapper extends AbstractWrapper {
 		        aut = new IpCamAuth(user, password);
         }
         
-        //String addressStr = buildConnectionString("http://",address,port,suffix);
         
         
         try {
@@ -241,10 +218,8 @@ public class SarxosRemoteCamWrapper extends AbstractWrapper {
     private boolean webcamInitialization (String wcname, String addr, IpCamMode camMode, IpCamAuth aut) throws MalformedURLException{
     	
   
-    	String title="";
     	Dimension size=new Dimension(320,240);
 
-		//String protString="http://";
 		
 		
 		livecam = new IpCamDevice(wcname, new URL(addr), camMode, aut);
@@ -275,29 +250,7 @@ public class SarxosRemoteCamWrapper extends AbstractWrapper {
 		
 
     	if ( this.liveview ) {
-    		/*
-			mainFrame = new JFrame( title );
-            
-            mainFrame.setLayout(new FlowLayout());
-    		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    		
-    		List<Webcam> wcl=Webcam.getWebcams();
-    		webcam=wcl.get(wcl.size()-1);
-    		
-    		panel = new WebcamPanel(webcam,size,true);
-    		
-    		//panel.setPreferredSize(size);
-    		panel.setFillArea(true);
-    		panel.setFPS(20);
-    		
-    		mainFrame.add(panel);
-    		mainFrame.pack();
-    		mainFrame.setVisible(true);
-    		
-    		/*
-    		 * 
-    		 */
-    		
+
 	         mainFrame = new JFrame( "Live-view from " + wcname );
 	         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	         //mainFrame.setPreferredSize(livecam.getResolution());
@@ -315,10 +268,7 @@ public class SarxosRemoteCamWrapper extends AbstractWrapper {
 	        // mainFrame.setResizable( false );
 	         mainFrame.setVisible( true );
 		}
-    	else{
-    		executor= Executors.newSingleThreadExecutor(); 
-        	executor.execute(this);
-    	}
+    	
     	
 		return true;	
     }
@@ -420,8 +370,6 @@ public class SarxosRemoteCamWrapper extends AbstractWrapper {
 	    			webcam.close();
 	    		}
 	    	}
-	    	//FIXME SHUTDOW
-	    	((ExecutorService) executor).shutdown();
 	        threadCounter--;
     }
     
