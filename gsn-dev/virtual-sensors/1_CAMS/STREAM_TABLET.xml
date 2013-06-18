@@ -19,7 +19,7 @@
 			<source alias="RCS2" sampling-rate="1" storage-size="1">
 				<address wrapper="sarxosremotecam">
 					<predicate key="webcam-name">GALAXYSTREAM</predicate>
-					<predicate key="address">http://192.168.9.146:8080/shot.jpg</predicate>
+					<predicate key="address">http://192.168.9.228:8080/shot.jpg</predicate>
 					<predicate key="capture-rate">500</predicate>
 					<predicate key="max-posts">-1</predicate>
 					<predicate key="live-view">false</predicate>
