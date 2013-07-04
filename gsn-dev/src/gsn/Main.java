@@ -5,6 +5,7 @@ import gsn.beans.StorageConfig;
 import gsn.beans.VSensorConfig;
 import gsn.http.ac.ConnectToDB;
 import gsn.http.rest.LocalDeliveryWrapper;
+import gsn.http.rest.VSSearchWrapper;
 import gsn.http.rest.PushDelivery;
 import gsn.http.rest.RestDelivery;
 import gsn.storage.SQLValidator;
@@ -155,10 +156,12 @@ public final class Main {
 
 		vsloader.addVSensorStateChangeListener(new SQLValidatorIntegration(SQLValidator.getInstance()));
 		vsloader.addVSensorStateChangeListener(DataDistributer.getInstance(LocalDeliveryWrapper.class));
+		vsloader.addVSensorStateChangeListener(DataDistributer.getInstance(VSSearchWrapper.class));
 		vsloader.addVSensorStateChangeListener(DataDistributer.getInstance(PushDelivery.class));
 		vsloader.addVSensorStateChangeListener(DataDistributer.getInstance(RestDelivery.class));
 
 		ContainerImpl.getInstance().addVSensorDataListener(DataDistributer.getInstance(LocalDeliveryWrapper.class));
+		ContainerImpl.getInstance().addVSensorDataListener(DataDistributer.getInstance(VSSearchWrapper.class));
 		ContainerImpl.getInstance().addVSensorDataListener(DataDistributer.getInstance(PushDelivery.class));
 		ContainerImpl.getInstance().addVSensorDataListener(DataDistributer.getInstance(RestDelivery.class));
 		vsloader.startLoading();
@@ -296,6 +299,7 @@ public final class Main {
 			wrappers = WrappersUtil.loadWrappers(new HashMap<String, Class<?>>());
 			if ( logger.isInfoEnabled ( ) ) logger.info ( new StringBuilder ( ).append ( "Loading wrappers.properties at : " ).append ( WrappersUtil.DEFAULT_WRAPPER_PROPERTIES_FILE ).toString ( ) );
 			if ( logger.isInfoEnabled ( ) ) logger.info ( "Wrappers initialization ..." );
+			
 		} catch ( JiBXException e ) {
 			logger.error ( e.getMessage ( ) );
 			logger.error ( new StringBuilder ( ).append ( "Can't parse the GSN configuration file : conf/gsn.xml" ).toString ( ) );

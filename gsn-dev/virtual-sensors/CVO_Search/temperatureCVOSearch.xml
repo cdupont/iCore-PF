@@ -1,0 +1,29 @@
+<virtual-sensor name="TemperatureCVOSearch" priority="10">
+	<processing-class>
+		<class-name>gsn.vsensor.BridgeVirtualSensor</class-name>
+		<init-params />
+		<output-structure> 
+			<field name="AvgTemp" type="double" />
+		</output-structure>
+		
+	</processing-class>
+	<description>search for a temperature VO in room A</description>
+	<life-cycle pool-size="10" />
+	<addressing>
+		<predicate key="geographical"></predicate>
+	</addressing>
+	<storage history-size="5m" />
+	<streams>
+		<stream name="input">
+			<source alias="source1" sampling-rate="1" storage-size="1">
+				<address wrapper="localVSSearch">	
+				    <predicate key="search_key">geographical</predicate>
+				    <predicate key="search_value">Room A</predicate>
+				</address>
+				<query>SELECT TEMPERATURE AS T1 FROM wrapper</query>
+			</source>
+			<query>SELECT T1 AS AvgTemp FROM source1</query>
+		</stream>
+	</streams>
+		
+</virtual-sensor>
