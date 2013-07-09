@@ -14,7 +14,7 @@
 	<storage history-size="5m" />
 	<streams>
 		<stream name="input">
-			<source alias="source" sampling-rate="1" storage-size="1">
+			<source alias="source" sampling-rate="1" storage-size="10">
 				<address wrapper="temperatureWrapper">	</address>
 				<query>SELECT temperature FROM wrapper</query>
 			</source>

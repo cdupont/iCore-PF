@@ -15,14 +15,14 @@
 	<storage history-size="5m" />
 	<streams>
 		<stream name="input">
-			<source alias="source1" sampling-rate="1" storage-size="1">
+			<source alias="source1" sampling-rate="1" storage-size="10">
 				<address wrapper="localVSSearch">	
 				    <predicate key="search_key">geographical</predicate>
 				    <predicate key="search_value">Room A</predicate>
 				</address>
-				<query>SELECT TEMPERATURE AS T1 FROM wrapper</query>
+				<query>SELECT temperaturevo1_temperature AS T1, temperaturevo2_temperature AS T2 FROM wrapper</query>
 			</source>
-			<query>SELECT T1 AS AvgTemp FROM source1</query>
+			<query>SELECT (AVG(T1)+AVG(T2))/2 AS AvgTemp FROM source1</query>
 		</stream>
 	</streams>
 		

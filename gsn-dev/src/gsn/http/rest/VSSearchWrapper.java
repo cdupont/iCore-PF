@@ -20,7 +20,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-
+import java.util.List;
+import java.util.Arrays;
 import javax.naming.OperationNotSupportedException;
 
 import org.apache.commons.collections.KeyValue;
@@ -32,30 +33,34 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterators;
 
+//import de.jtem.numericalMethods.util.Arrays;
+
 public class VSSearchWrapper extends AbstractWrapper implements DeliverySystem{
 
 	private  final String CURRENT_TIME = ISODateTimeFormat.dateTime().print(System.currentTimeMillis());
 	
 	private static transient Logger                  logger           = Logger.getLogger( VSSearchWrapper.class );
 	
-	private VSensorConfig vSensorConfig;
+	private Collection<VSensorConfig> vSensorConfigs;
 	
-	public VSensorConfig getVSensorConfig() {
-		return vSensorConfig;
+	public Collection<VSensorConfig> getVSensorConfig() {
+		return vSensorConfigs;
 	}
 	
-	private DataField[] structure;
+	private List<DataField> structure;
 	
-	private DefaultDistributionRequest distributionRequest;
+	private Collection<DistributionRequest> distributionRequests;
 
 	public String getWrapperName() {
 		return "VS-Search-Wrapper";
 	}
 
 	public boolean initialize() {
+		
+		structure = new ArrayList<DataField>();
+		
 		AddressBean params = getActiveAddressBean( );
 		String query = params.getPredicateValue("query");
-		String vsName = params.getPredicateValue( "name" );
 		final String search_key = params.getPredicateValue( "search_key" );
 		final String search_value = params.getPredicateValue( "search_value" );
 		logger.info("search_key: " + search_key);
@@ -74,23 +79,22 @@ public class VSSearchWrapper extends AbstractWrapper implements DeliverySystem{
 		        	        return false;
 		    }};
 					    	
-			Collection<VSensorConfig> VOConfs = Collections2.filter(confs, isVO);
-			logger.info("VOConfs size: " + VOConfs.size());
-			if(VOConfs.size()!=0) {
-				vsName = VOConfs.iterator().next().getName();
-				logger.info("vsName found: " + vsName);
-			}				
+		    vSensorConfigs = Collections2.filter(confs, isVO);
+			logger.info("vSensorConfigs size: " + vSensorConfigs.size());
+			if(vSensorConfigs.size() == 0)
+				return false;
+					
 		}		
 				
 		String startTime = params.getPredicateValueWithDefault("start-time",CURRENT_TIME );
-
-		if (query==null && vsName == null) {
-			logger.error("For using local-wrapper, either >query< or >name< parameters should be specified"); 
-			return false;
-		}
-
-		if (query == null) 
-			query = "select * from "+vsName;
+//
+//		if (query==null && vsName == null) {
+//			logger.error("For using local-wrapper, either >query< or >name< parameters should be specified"); 
+//			return false;
+//		}
+//
+//		if (query == null) 
+//			query = "select * from "+vsName;
 
 		long lastVisited;
 		try {
@@ -101,15 +105,22 @@ public class VSSearchWrapper extends AbstractWrapper implements DeliverySystem{
 			return false;
 		}
 		try {
-			vsName = SQLValidator.getInstance().validateQuery(query);
-			if(vsName==null) //while the other instance is not loaded.
-				return false;
-			query = SQLUtils.newRewrite(query, vsName, vsName.toLowerCase()).toString();
+					
+			distributionRequests = new ArrayList<DistributionRequest>();
+			for(VSensorConfig vSensorConfig : vSensorConfigs) {
+				
+				query = "select * from " + vSensorConfig.getName();
+				
+				String vsName = SQLValidator.getInstance().validateQuery(query);
+				if(vsName==null) //while the other instance is not loaded.
+					return false;
+				query = SQLUtils.newRewrite(query, vsName, vsName.toLowerCase()).toString();
+				
+				logger.debug("Local wrapper request received for: " + vsName);
+				
+				distributionRequests.add(DistributionRequestRenameCols.create(this, vSensorConfig, query, lastVisited));	
+			}			
 			
-			logger.debug("Local wrapper request received for: "+vsName);
-			
-			vSensorConfig = Mappings.getConfig(vsName);
-			distributionRequest = DefaultDistributionRequest.create(this, vSensorConfig, query, lastVisited);
 			// This call MUST be executed before adding this listener to the data-distributer because distributer checks the isClose method before flushing.
 		}catch (Exception e) {
 			logger.error("Problem in the query parameter of the local-wrapper.");
@@ -121,35 +132,47 @@ public class VSSearchWrapper extends AbstractWrapper implements DeliverySystem{
 
 	public boolean sendToWrapper ( String action,String[] paramNames, Serializable[] paramValues ) throws OperationNotSupportedException {
 		AbstractVirtualSensor vs;
-		try {
-			vs = Mappings.getVSensorInstanceByVSName( vSensorConfig.getName( ) ).borrowVS( );
-		} catch ( VirtualSensorInitializationFailedException e ) {
-			logger.warn("Sending data back to the source virtual sensor failed !: "+e.getMessage( ),e);
-			return false;
+		boolean toReturn = true;
+		for(VSensorConfig vSensorConfig : vSensorConfigs) {
+			try {
+				vs = Mappings.getVSensorInstanceByVSName( vSensorConfig.getName( ) ).borrowVS( );
+			} catch ( VirtualSensorInitializationFailedException e ) {
+				logger.warn("Sending data back to the source virtual sensor failed !: "+e.getMessage( ),e);
+				return false;
+			}
+			if(vs.dataFromWeb( action , paramNames , paramValues ) == false)
+				toReturn = false;
+			
+			Mappings.getVSensorInstanceByVSName( vSensorConfig.getName( ) ).returnVS( vs );
 		}
-		boolean toReturn = vs.dataFromWeb( action , paramNames , paramValues );
-		Mappings.getVSensorInstanceByVSName( vSensorConfig.getName( ) ).returnVS( vs );
 		return toReturn;
 	}
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("LocalDistributionReq => [" ).append(distributionRequest.getQuery()).append(", Start-Time: ").append(new Date(distributionRequest.getStartTime())).append("]");
+		for(DistributionRequest distributionRequest : distributionRequests) {
+			sb.append("LocalDistributionReq => [" ).append(distributionRequest.getQuery()).append(", Start-Time: ").append(new Date(distributionRequest.getStartTime())).append("]");
+		}
 		return sb.toString();
 	}
 	
 	public void run() {
 		DataDistributer localDistributer = DataDistributer.getInstance(VSSearchWrapper.class);
-		localDistributer.addListener(this.distributionRequest);
+		
+		for(DistributionRequest distributionRequest : distributionRequests) {
+			localDistributer.addListener(distributionRequest);	
+		}
+		
 	}
 
 	public void writeStructure(DataField[] fields) throws IOException {
-		this.structure=fields;
+		this.structure.addAll(Arrays.asList(fields));
 		
 	}
 	
 	public DataField[] getOutputFormat() {
-		return structure;
+		
+		return structure.toArray(new DataField[structure.size()]);
 	}
 
 	public void close() {

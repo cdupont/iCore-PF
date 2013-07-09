@@ -14,17 +14,19 @@ public class DefaultDistributionRequest implements DistributionRequest {
 
 	private static transient Logger       logger     = Logger.getLogger ( DefaultDistributionRequest.class );
 
-	private long startTime;
+	protected long startTime;
 
-    private long lastVisitedPk = -1;
+	protected long lastVisitedPk = -1;
 
-	private String query;
+    protected String query;
 
-	private DeliverySystem deliverySystem;
+	protected DeliverySystem deliverySystem;
 
-	private VSensorConfig vSensorConfig;
+	protected VSensorConfig vSensorConfig;
 
-    private DefaultDistributionRequest(DeliverySystem deliverySystem, VSensorConfig sensorConfig, String query, long startTime) throws IOException, SQLException {
+	protected DefaultDistributionRequest() {}
+			
+    protected DefaultDistributionRequest(DeliverySystem deliverySystem, VSensorConfig sensorConfig, String query, long startTime) throws IOException, SQLException {
 		this.deliverySystem = deliverySystem;
 		vSensorConfig = sensorConfig;
 		this.query = query;

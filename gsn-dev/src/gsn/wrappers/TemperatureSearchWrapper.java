@@ -17,12 +17,10 @@ import org.apache.log4j.Logger;
  * latter is for the sensors equipped with both temperature and light sensors.
  * 
  */
-public class MultiFormatWrapper extends AbstractWrapper {
+public class TemperatureSearchWrapper extends AbstractWrapper {
 	
   private DataField[] collection = new DataField[] { 
-     new DataField("packet_type", "int", "packet type"),
-     new DataField("temperature", "double", "Presents the temperature sensor."), 
-     new DataField("light", "double", "Presents the light sensor.") };
+     new DataField("temperature", "double", "Presents the temperature sensor.") };
   
   private final transient Logger logger = Logger.getLogger(MultiFormatWrapper.class);
   private int counter;
@@ -30,7 +28,7 @@ public class MultiFormatWrapper extends AbstractWrapper {
   private long rate = 1000;
 
   public boolean initialize() {
-    setName("MultiFormatWrapper" + counter++);
+    setName("TemperatureWrapper" + counter++);
     
     params = getActiveAddressBean();
     
@@ -44,9 +42,8 @@ public class MultiFormatWrapper extends AbstractWrapper {
   }
 
   public void run() {
-    Double light = 0.0, temperature = 0.0;
-    int packetType = 0;
-    
+    Double temperature = 0.0;
+        
     while (isActive()) {
       try {
         // delay 
@@ -56,12 +53,10 @@ public class MultiFormatWrapper extends AbstractWrapper {
       }
       
       // create some random readings
-      light = ((int) (Math.random() * 10000)) / 10.0;
       temperature = ((int) (Math.random() * 1000)) / 10.0;
-      packetType = 2;
 
       // post the data to GSN
-      postStreamElement(new Serializable[] { packetType, temperature, light });       
+      postStreamElement(new Serializable[] { temperature });       
     }
   }
 
@@ -70,7 +65,7 @@ public class MultiFormatWrapper extends AbstractWrapper {
   }
 
   public String getWrapperName() {
-    return "MultiFormat Sample Wrapper";
+    return "TemperatureWrapper Wrapper";
   }  
 
   public void dispose() {
