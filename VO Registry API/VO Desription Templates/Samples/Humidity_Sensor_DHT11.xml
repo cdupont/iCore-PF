@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<icore.voregistry.api.VirtualObject>
+  <uri>http://purl.oclc.org/UPRC/icore/VO/Humidity_Sensor_DHT11</uri>
+  <type>http://purl.oclc.org/NET/ssnx/ssn#Sensor</type>
+  <deploymentInfo>http://purl.oclc.org/UPRC/icore/VO/Humidity_Sensor_DHT11/deploy.wsdl</deploymentInfo>
+  <status>AVAILABLE</status>
+  <mobility>false</mobility>
+  <ict__object>
+    <non__ict__object>
+      <type>http://www.loa.istc.cnr.it/ontologies/OWN/OWN.owl#Room</type>
+      <name>Sarahs Home</name>
+      <geoLocation>
+        <longitude>23.65006</longitude>
+        <latitude>37.941881</latitude>
+        <altitude>0.0</altitude>
+      </geoLocation>
+    </non__ict__object>
+    <geoLocation>
+      <longitude>300.0</longitude>
+      <latitude>300.0</latitude>
+      <altitude>0.0</altitude>
+    </geoLocation>
+    <ict__parameters>
+      <icore.voregistry.api.ICTParameter>
+        <name>Sensor Measurement Range</name>
+        <meta__features>
+          <icore.voregistry.api.MetaFeatureSet>
+            <type>http://purl.oclc.org/NET/ocg/minValue</type>
+            <value class="string">35%RH</value>
+          </icore.voregistry.api.MetaFeatureSet>
+          <icore.voregistry.api.MetaFeatureSet>
+            <type>http://dbpedia.org/ontology/maxValue</type>
+            <value class="string">110%RH</value>
+          </icore.voregistry.api.MetaFeatureSet>
+        </meta__features>
+      </icore.voregistry.api.ICTParameter>
+    </ict__parameters>
+  </ict__object>
+  <vo__parameters>
+    <icore.voregistry.api.VOParameter>
+      <name>Communication Protocol 1</name>
+      <meta__features>
+        <icore.voregistry.api.MetaFeatureSet>
+          <type>http://www.iot-icore.eu/ontologies/CommunicationInterfaces/Protocols.owl#Protocol_Type</type>
+          <value class="string">REST</value>
+        </icore.voregistry.api.MetaFeatureSet>
+      </meta__features>
+      <access__rights>
+        <icore.voregistry.api.AccessRight>
+          <name>WRITE</name>
+          <type>http://www.iot-icore.eu/ont/AccessRights/WRITE</type>
+          <value class="string">VO_OWNER</value>
+        </icore.voregistry.api.AccessRight>
+        <icore.voregistry.api.AccessRight>
+          <name>DISCOVER</name>
+          <type>http://www.iot-icore.eu/ont/AccessRights/DISCOVERY</type>
+          <value class="set">
+            <string>SIMPLE_USER</string>
+            <string>VO_OWNER</string>
+          </value>
+        </icore.voregistry.api.AccessRight>
+        <icore.voregistry.api.AccessRight>
+          <name>READ</name>
+          <type>http://www.iot-icore.eu/ont/AccessRights/READ</type>
+          <value class="set">
+            <string>SIMPLE_USER</string>
+            <string>VO_OWNER</string>
+          </value>
+        </icore.voregistry.api.AccessRight>
+      </access__rights>
+      <billing__costs>
+        <icore.voregistry.api.BillingCost>
+          <name>Price per Read</name>
+          <type>http://www.iot-icore.eu/ont/Billing#Price_per_Read</type>
+          <value class="string">0.00</value>
+        </icore.voregistry.api.BillingCost>
+      </billing__costs>
+    </icore.voregistry.api.VOParameter>
+  </vo__parameters>
+  <vo__functions>
+    <icore.voregistry.api.VOFunction>
+      <name>Emulated Humidity Monitoring</name>
+      <description>This function monitors the environmental humidity.</description>
+      <input>
+        <string>Environmental Humidity</string>
+      </input>
+      <output>
+        <string>Emulated Humidity</string>
+      </output>
+      <access__rights>
+        <icore.voregistry.api.AccessRight>
+          <name>DISCOVER</name>
+          <type>http://www.iot-icore.eu/ont/AccessRights/DISCOVERY</type>
+          <value class="set">
+            <string>SIMPLE_USER</string>
+            <string>VO_OWNER</string>
+          </value>
+        </icore.voregistry.api.AccessRight>
+        <icore.voregistry.api.AccessRight>
+          <name>WRITE</name>
+          <type>http://www.iot-icore.eu/ont/AccessRights/WRITE</type>
+          <value class="string">VO_OWNER</value>
+        </icore.voregistry.api.AccessRight>
+        <icore.voregistry.api.AccessRight>
+          <name>READ</name>
+          <type>http://www.iot-icore.eu/ont/AccessRights/READ</type>
+          <value class="set">
+            <string>SIMPLE_USER</string>
+            <string>VO_OWNER</string>
+          </value>
+        </icore.voregistry.api.AccessRight>
+      </access__rights>
+      <billing__costs>
+        <icore.voregistry.api.BillingCost>
+          <name>Price per Minute</name>
+          <type>http://www.iot-icore.eu/ont/Billing#Price_per_Minute</type>
+          <value class="string">0.00</value>
+        </icore.voregistry.api.BillingCost>
+        <icore.voregistry.api.BillingCost>
+          <name>Price per Function Call</name>
+          <type>http://www.iot-icore.eu/ont/Billing#Price_per_Function_Call</type>
+          <value class="string">0.01</value>
+        </icore.voregistry.api.BillingCost>
+      </billing__costs>
+      <input__parameters>
+        <icore.voregistry.api.InputParameter>
+          <name>Environmental Humidity</name>
+          <meta__features>
+            <icore.voregistry.api.MetaFeatureSet>
+              <type>http://opengeospatial.org/envir_conditions.owl#</type>
+              <value class="string">Environmental_Humidity</value>
+            </icore.voregistry.api.MetaFeatureSet>
+          </meta__features>
+        </icore.voregistry.api.InputParameter>
+      </input__parameters>
+      <output__parameters>
+        <icore.voregistry.api.OutputParameter>
+          <name>Emulated Humidity</name>
+          <meta__features>
+            <icore.voregistry.api.MetaFeatureSet>
+              <type>http://www.iot-icore.eu/ontologies/CommunicationInterfaces/Protocols.owl#Protocol_Type</type>
+              <value class="string">REST</value>
+            </icore.voregistry.api.MetaFeatureSet>
+            <icore.voregistry.api.MetaFeatureSet>
+              <type>http://purl.obolibrary.org/obo/uo.owl#</type>
+              <value class="string">%RH</value>
+            </icore.voregistry.api.MetaFeatureSet>
+          </meta__features>
+        </icore.voregistry.api.OutputParameter>
+      </output__parameters>
+      <function__features>
+        <icore.voregistry.api.VOFunctionFeature>
+          <type>http://www.iot-icore.eu/ontologies/features.owl#Cost</type>
+          <name>Network</name>
+          <value>3.0</value>
+        </icore.voregistry.api.VOFunctionFeature>
+        <icore.voregistry.api.VOFunctionFeature>
+          <type>http://www.iot-icore.eu/ontologies/features.owl#Utility</type>
+          <name>Quality</name>
+          <value>1.0</value>
+        </icore.voregistry.api.VOFunctionFeature>
+        <icore.voregistry.api.VOFunctionFeature>
+          <type>http://www.iot-icore.eu/ontologies/features.owl#Cost</type>
+          <name>Expenditure</name>
+          <value>3.0</value>
+        </icore.voregistry.api.VOFunctionFeature>
+        <icore.voregistry.api.VOFunctionFeature>
+          <type>http://www.iot-icore.eu/ontologies/features.owl#Utility</type>
+          <name>Security</name>
+          <value>1.0</value>
+        </icore.voregistry.api.VOFunctionFeature>
+        <icore.voregistry.api.VOFunctionFeature>
+          <type>http://www.iot-icore.eu/ontologies/features.owl#Cost</type>
+          <name>Energy</name>
+          <value>3.0</value>
+        </icore.voregistry.api.VOFunctionFeature>
+        <icore.voregistry.api.VOFunctionFeature>
+          <type>http://www.iot-icore.eu/ontologies/features.owl#Utility</type>
+          <name>Performance</name>
+          <value>1.0</value>
+        </icore.voregistry.api.VOFunctionFeature>
+      </function__features>
+    </icore.voregistry.api.VOFunction>
+  </vo__functions>
+  <vo__owner>
+    <uri>http://www.iot-icore.eu/Users/UPRC_MEMBER</uri>
+  </vo__owner>
+</icore.voregistry.api.VirtualObject>

@@ -1,0 +1,77 @@
+{"icore.voregistry.api.VirtualObject":{
+	"uri":"http:\/\/purl.oclc.org\/UPRC\/icore\/VO\/Humidity_Sensor_DHT11",
+	"type":"http:\/\/purl.oclc.org\/NET\/ssnx\/ssn#Sensor",
+	"deploymentInfo":"http:\/\/purl.oclc.org\/UPRC\/icore\/VO\/Humidity_Sensor_DHT11\/deploy.wsdl",
+	"status":"AVAILABLE",
+	"mobility":false,
+	"ict_object":{
+		"non_ict_object":{
+			"type":"http:\/\/www.loa.istc.cnr.it\/ontologies\/OWN\/OWN.owl#Room",
+			"name":"Sarahs Home",
+			"geoLocation":{"longitude":23.65006,"latitude":37.941881,"altitude":0}
+		},
+		"geoLocation":{"longitude":300,"latitude":300,"altitude":0},
+		"ict_parameters":[{
+			"icore.voregistry.api.ICTParameter":{
+				"name":"Sensor Measurement Range",
+				"meta_features":[{"icore.voregistry.api.MetaFeatureSet":[{"type":"http:\/\/purl.oclc.org\/NET\/ocg\/minValue","value":{"@class":"string","$":"35%RH"}},{"type":"http:\/\/dbpedia.org\/ontology\/maxValue","value":{"@class":"string","$":"110%RH"}}]}]}
+		}
+		]
+	},
+	"vo_parameters":[{
+		"icore.voregistry.api.VOParameter":{"name":"Communication Protocol 1",
+		"meta_features":[{"icore.voregistry.api.MetaFeatureSet":{"type":"http:\/\/www.iot-icore.eu\/ontologies\/CommunicationInterfaces\/Protocols.owl#Protocol_Type","value":{"@class":"string","$":"REST"}}}],
+		"access_rights":[{"icore.voregistry.api.AccessRight":[{"name":"WRITE","type":"http:\/\/www.iot-icore.eu\/ont\/AccessRights\/WRITE","value":{"@class":"string","$":"VO_OWNER"}},{"name":"DISCOVER","type":"http:\/\/www.iot-icore.eu\/ont\/AccessRights\/DISCOVERY","value":[{"@class":"set","string":["SIMPLE_USER","VO_OWNER"]}]},{"name":"READ","type":"http:\/\/www.iot-icore.eu\/ont\/AccessRights\/READ","value":[{"@class":"set","string":["SIMPLE_USER","VO_OWNER"]}]}]}],"billing_costs":[{"icore.voregistry.api.BillingCost":{"name":"Price per Read","type":"http:\/\/www.iot-icore.eu\/ont\/Billing#Price_per_Read","value":[{"@class":"string","$":"0.00"}]}}]}
+	}],
+	"vo_functions":[{
+		"icore.voregistry.api.VOFunction":{
+			"name":"Emulated Humidity Monitoring",
+			"description":"This function monitors the environmental humidity.",
+			"input":[{"string":"Environmental Humidity"}],
+			"output":[{"string":"Emulated Humidity"}],
+			"access_rights":[{
+				"icore.voregistry.api.AccessRight":[
+				{"name":"WRITE","type":"http:\/\/www.iot-icore.eu\/ont\/AccessRights\/WRITE","value":[{"@class":"string","$":"VO_OWNER"}]},
+				{"name":"READ","type":"http:\/\/www.iot-icore.eu\/ont\/AccessRights\/READ","value":[{"@class":"set","string":["SIMPLE_USER","VO_OWNER"]}]},
+				{"name":"DISCOVER","type":"http:\/\/www.iot-icore.eu\/ont\/AccessRights\/DISCOVERY","value":[{"@class":"set","string":["SIMPLE_USER","VO_OWNER"]}]}]
+			}],
+			"billing_costs":[{
+				"icore.voregistry.api.BillingCost":[
+					{"name":"Price per Function Call","type":"http:\/\/www.iot-icore.eu\/ont\/Billing#Price_per_Function_Call","value":[{"@class":"string","$":"0.01"}]},
+					{"name":"Price per Minute","type":"http:\/\/www.iot-icore.eu\/ont\/Billing#Price_per_Minute","value":[{"@class":"string","$":"0.00"}]}
+				]
+			}],
+			"input_parameters":[{
+				"icore.voregistry.api.InputParameter":{
+					"name":"Environmental Humidity",
+					"meta_features":[
+						{"icore.voregistry.api.MetaFeatureSet":{"type":"http:\/\/opengeospatial.org\/envir_conditions.owl#","value":[{"@class":"string","$":"Environmental_Humidity"}]}}
+					]
+				}
+			}],
+			"output_parameters":[{
+				"icore.voregistry.api.OutputParameter":{
+					"name":"Emulated Humidity",
+					"meta_features":[{
+						"icore.voregistry.api.MetaFeatureSet":[
+							{"type":"http:\/\/purl.obolibrary.org\/obo\/uo.owl#","value":[{"@class":"string","$":"%RH"}]},
+							{"type":"http:\/\/www.iot-icore.eu\/ontologies\/CommunicationInterfaces\/Protocols.owl#Protocol_Type","value":[{"@class":"string","$":"REST]}}
+						]
+					}]
+				}
+			}],
+			"function_features":[{
+				"icore.voregistry.api.VOFunctionFeature":[
+					{"type":"http:\/\/www.iot-icore.eu\/ontologies\/features.owl#Cost","name":"Energy","value":[3]},
+					{"type":"http:\/\/www.iot-icore.eu\/ontologies\/features.owl#Cost","name":"Expenditure","value":[3]},
+					{"type":"http:\/\/www.iot-icore.eu\/ontologies\/features.owl#Cost","name":"Network","value":[3]},
+					{"type":"http:\/\/www.iot-icore.eu\/ontologies\/features.owl#Utility","name":"Performance","value":[1]},
+					{"type":"http:\/\/www.iot-icore.eu\/ontologies\/features.owl#Utility","name":"Quality","value":[1]},
+					{"type":"http:\/\/www.iot-icore.eu\/ontologies\/features.owl#Utility","name":"Security","value":[1]}
+				]
+			}]
+		}
+	}],
+	"vo_owner":{"uri":"http:\/\/www.iot-icore.eu\/Users\/UPRC_MEMBER"}
+	}
+}

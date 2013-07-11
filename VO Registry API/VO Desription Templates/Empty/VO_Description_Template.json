@@ -1,0 +1,79 @@
+{"icore.voregistry.api.VirtualObject":{
+	"uri":"",
+	"type":"",
+	"deploymentInfo":"",
+	"status":"",
+	"mobility":,
+	"ict_object":{
+		"non_ict_object":{
+			"type":"",
+			"name":"",
+			"geoLocation":{"longitude": ,"latitude": ,"altitude": }
+		},
+		"geoLocation":{"longitude": ,"latitude": ,"altitude": },
+		"ict_parameters":[{
+			"icore.voregistry.api.ICTParameter":{
+				"name":"",
+				"meta_features":[{"icore.voregistry.api.MetaFeatureSet":[{
+					"type":"","value":{"@class":"","$":""}},
+					//...
+				}]				
+			//...
+		}]
+	},
+	"vo_parameters":[{
+		"icore.voregistry.api.VOParameter":{
+			"name":"",
+			"meta_features":[{"icore.voregistry.api.MetaFeatureSet":{"type":"","value":{"@class":"","$":""}}, //...}],
+			"access_rights":[{"icore.voregistry.api.AccessRight":[{"name":"","type":"","value":{"@class":"","$":""}}, //...}],
+			"billing_costs":[{"icore.voregistry.api.BillingCost":{"name":"","type":"","value":[{"@class":"","$":""}]}, //...}]			
+		}
+		//...
+	}],
+	"vo_functions":[{
+		"icore.voregistry.api.VOFunction":{
+			"name":"",
+			"description":"",
+			"input":[{"string":""}],
+			"output":[{"string":""}],
+			"access_rights":[{
+				"icore.voregistry.api.AccessRight":[
+				{"name":"","type":"","value":[{"@class":"","$":""}, //...]},
+				//...
+			}],
+			"billing_costs":[{
+				"icore.voregistry.api.BillingCost":[
+					{"name":"","type":"","value":[{"@class":"","$":""}, //...]},
+					//...
+				]
+			}],
+			"input_parameters":[{
+				"icore.voregistry.api.InputParameter":{
+					"name":"",
+					"meta_features":[
+						{"icore.voregistry.api.MetaFeatureSet":{"type":"","value":[{"@class":"","$":""}]}, //...}
+					]
+				}
+			}],
+			"output_parameters":[{
+				"icore.voregistry.api.OutputParameter":{
+					"name":"",
+					"meta_features":[{
+						"icore.voregistry.api.MetaFeatureSet":[
+							{"type":"","value":[{"@class":"","$":""}]},
+							//...
+						]
+					}]
+				}
+			}],
+			"function_features":[{
+				"icore.voregistry.api.VOFunctionFeature":[
+					{"type":"","name":"","value":[]},
+					//...
+				]
+			}]
+		}
+	}],
+	"vo_owner":{"uri":""}
+	}
+}
