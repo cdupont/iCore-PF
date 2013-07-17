@@ -1,5 +1,6 @@
 package gsn;
 
+import gsn.VORegistry.VORegistryAdapter;
 import gsn.beans.AddressBean;
 import gsn.beans.DataField;
 import gsn.beans.InputStream;
@@ -141,11 +142,17 @@ public class VSensorLoader extends Thread {
         Modifications modifications = getUpdateStatus(pluginsDir);
         ArrayList<VSensorConfig> removeIt = modifications.getRemove();
         ArrayList<VSensorConfig> addIt = modifications.getAdd();
+        
+        //ICore specific
+        VORegistryAdapter voRegistry = new VORegistryAdapter();
+        
         for (VSensorConfig configFile : removeIt) {
             removeVirtualSensor(configFile);
+            voRegistry.deleteVO(configFile);
         }
         for (VSensorConfig vs : addIt) {
             loadPlugin(vs);
+            voRegistry.registerNewVO(vs);
         }
         
 		try {
@@ -178,6 +185,8 @@ public class VSensorLoader extends Thread {
         if (!isVirtualSensorValid(vs))
             return false;
 
+        
+        
         VirtualSensor pool = new VirtualSensor(vs);
         try {
             if (createInputStreams(pool) == false) {
