@@ -4,8 +4,10 @@ iCore Platform, V0.1
 A proper java JRE environment should be present. The Platform has been tested with Java 7.
 Maven should be installed.
 
-To install the platform, type on a command prompt at the root of the project:
+To install the platform, type at a command prompt:
 
+$ git clone git@github.com:cdupont/iCore-PF.git
+$ cd iCore-PF
 $ mvn install
 
 
