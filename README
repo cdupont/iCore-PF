@@ -1,0 +1,26 @@
+iCore Platform, V0.1
+
+--INSTALL-- 
+A proper java JRE environment should be present. The Platform has been tested with Java 7.
+Maven should be installed.
+
+To install the platform, type on a command prompt at the root of the project:
+
+$ mvn install
+
+
+--ECLIPSE--
+To use Eclipse as an IDE, type on a command prompt:
+
+$ mvn eclipse:eclipse
+
+This command should generate the .classpath and .project files.
+Then in Eclipse, use the command "File/Import.../Existing project into workspace" and navigate to the location of the .project.
+
+--TEST--
+
+You can run the small demo with the following command:
+
+$ mvn exec:java -Dexec.mainClass="examples.Main"
+
+Press Ctrl-C to exit the demo.
